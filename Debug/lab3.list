@@ -202,7 +202,7 @@ void fsm_for_input_processing(void) {
  8000204:	2b01      	cmp	r3, #1
  8000206:	d047      	beq.n	8000298 <fsm_for_input_processing+0xa8>
  8000208:	e069      	b.n	80002de <fsm_for_input_processing+0xee>
-        // Nếu đả thả, kiểm tra xem có nhấn không
+        // Nếu đang thả, kiểm tra xem có nhấn không
         case BUTTON_RELEASED:
             if(is_button_pressed(0)) {
  800020a:	2000      	movs	r0, #0
@@ -233,7 +233,7 @@ void fsm_for_input_processing(void) {
  8000232:	601a      	str	r2, [r3, #0]
                 }
 
-                // Kiểm tr chế độ hiện tại
+                // Kiểm tra chế độ hiện tại
                 switch (current_mode) {
  8000234:	4b93      	ldr	r3, [pc, #588]	; (8000484 <fsm_for_input_processing+0x294>)
  8000236:	681b      	ldr	r3, [r3, #0]
@@ -1335,7 +1335,7 @@ void fsm_normal_mode(void) {
  800099a:	3b01      	subs	r3, #1
  800099c:	4a46      	ldr	r2, [pc, #280]	; (8000ab8 <fsm_normal_mode+0x1e4>)
  800099e:	6013      	str	r3, [r2, #0]
-				// Hết thời gian chuyển qua trạng thía tiếp theo
+				// Hết thời gian chuyển qua trạng thái tiếp theo
 				if (counter2 <= 0) {
  80009a0:	4b45      	ldr	r3, [pc, #276]	; (8000ab8 <fsm_normal_mode+0x1e4>)
  80009a2:	681b      	ldr	r3, [r3, #0]
