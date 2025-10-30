@@ -99,9 +99,9 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  setTimer(0, 100);
-  setTimer(1, 100);
-  setTimer(2, 100);
+  setTimer(0, 1000);
+  setTimer(1, 1000);
+  setTimer(2, 1000);
   while (1)
   {
 	  fsm_for_input_processing();

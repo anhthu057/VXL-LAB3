@@ -51,7 +51,7 @@ void adjustTrafficTiming(void) {
 void fsm_for_input_processing(void) {
     // BUTTON1
     switch(button1State) {
-        // Nếu đả thả, kiểm tra xem có nhấn không
+        // Nếu đang thả, kiểm tra xem có nhấn không
         case BUTTON_RELEASED:
             if(is_button_pressed(0)) {
                 button1State = BUTTON_PRESSED;
@@ -62,7 +62,7 @@ void fsm_for_input_processing(void) {
                     current_mode = MODE_NORMAL;
                 }
 
-                // Kiểm tr chế độ hiện tại
+                // Kiểm tra chế độ hiện tại
                 switch (current_mode) {
                     case MODE_MODIFY_RED:
                         temp_value = RED_DURATION;
@@ -77,7 +77,7 @@ void fsm_for_input_processing(void) {
                         traffic_state = RED_GREEN;
                         counter1 = RED_DURATION;
                         counter2 = GREEN_DURATION;
-                        setTimer(0, 100);
+                        setTimer(0, 1000);
                         break;
                 }
             }
@@ -134,7 +134,7 @@ void fsm_for_input_processing(void) {
                 	if (isTimerExpired(2)) {
 						temp_value++;
 						if (temp_value > 99) temp_value = 1;
-						setTimer(2, 50);
+						setTimer(2, 500);
 					}
                 }
                 break;
@@ -169,7 +169,7 @@ void fsm_for_input_processing(void) {
                     traffic_state = RED_GREEN;
                     counter1 = RED_DURATION;
                     counter2 = GREEN_DURATION;
-                    setTimer(0, 100);
+                    setTimer(0, 1000);
                 }
                 break;
 

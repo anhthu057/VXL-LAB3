@@ -58,7 +58,7 @@ void display7SEG() {
 // FSM cho chế độ normal
 void fsm_normal_mode(void) {
     if (isTimerExpired(0)) {
-        setTimer(0, 100);
+        setTimer(0, 1000);
 		// Cập nhật giá trị hiển thị
 		led_buffer[0] = counter1 / 10;
 		led_buffer[1] = counter1 % 10;
@@ -75,7 +75,7 @@ void fsm_normal_mode(void) {
 
 				counter1--;
 				counter2--;
-				// Hết thời gian chuyển qua trạng thía tiếp theo
+				// Hết thời gian chuyển qua trạng thái tiếp theo
 				if (counter2 <= 0) {
 					traffic_state = RED_AMBER;
 					counter2 = AMBER_DURATION;
@@ -130,7 +130,7 @@ void fsm_normal_mode(void) {
 void fsm_modify_mode(void) {
     // Nháy LEDs mỗi 2Hz
     if (isTimerExpired(1)) {
-        setTimer(1, 25);
+        setTimer(1, 250);
         blink_state = !blink_state;
 
         if (blink_state) {

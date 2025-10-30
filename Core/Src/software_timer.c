@@ -7,12 +7,14 @@
 
 #include "software_timer.h"
 
+#define TIMER_CYCLE 10
+
 int timer_counter[MAX_TIMERS];
 int timer_flag[MAX_TIMERS];
 
 void setTimer(int index, int duration) {
     if (index >= 0 && index < MAX_TIMERS) {
-        timer_counter[index] = duration;
+        timer_counter[index] = duration / TIMER_CYCLE;
         timer_flag[index] = 0;
     }
 }
