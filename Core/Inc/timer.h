@@ -9,6 +9,7 @@
 #define INC_TIMER_H_
 
 #include "main.h"
+#include "scheduler.h"
 
 extern TIM_HandleTypeDef htim2;
 

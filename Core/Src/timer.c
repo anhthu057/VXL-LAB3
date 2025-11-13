@@ -10,10 +10,12 @@
 #include "input_reading.h"
 #include "led_display.h"
 #include "main.h"
+#include "scheduler.h"
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
     if (htim->Instance == TIM2) {
-        timerRun();
-        button_reading();
+        //timerRun();
+    	SCH_Update();
+    	button_reading();
     }
 }

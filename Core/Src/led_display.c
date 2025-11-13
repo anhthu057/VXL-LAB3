@@ -9,6 +9,7 @@
 #include "global.h"
 #include "main.h"
 #include "software_timer.h"
+#include "scheduler.h"
 
 static int led_buffer[4] = {0, 0, 0, 0};
 
@@ -57,105 +58,113 @@ void display7SEG() {
 
 // FSM cho chế độ normal
 void fsm_normal_mode(void) {
-    if (isTimerExpired(0)) {
-        setTimer(0, 1000);
+    //if (isTimerExpired(0)) {
+        //setTimer(0, 1000);
 		// Cập nhật giá trị hiển thị
-		led_buffer[0] = counter1 / 10;
-		led_buffer[1] = counter1 % 10;
-		led_buffer[2] = counter2 / 10;
-		led_buffer[3] = counter2 % 10;
+	if (current_mode != MODE_NORMAL) return;
+	led_buffer[0] = counter1 / 10;
+	led_buffer[1] = counter1 % 10;
+	led_buffer[2] = counter2 / 10;
+	led_buffer[3] = counter2 % 10;
 
-        switch (traffic_state) {
+	switch (traffic_state) {
 
-			// Road 1 Đỏ - Road 2 Xanh
-			case RED_GREEN:
-				// Bật các LED đơn
-				setTrafficLight(0, 1, 0, 0);
-				setTrafficLight(1, 0, 0, 1);
+		// Road 1 Đỏ - Road 2 Xanh
+		case RED_GREEN:
+			// Bật các LED đơn
+			setTrafficLight(0, 1, 0, 0);
+			setTrafficLight(1, 0, 0, 1);
 
-				counter1--;
-				counter2--;
-				// Hết thời gian chuyển qua trạng thái tiếp theo
-				if (counter2 <= 0) {
-					traffic_state = RED_AMBER;
-					counter2 = AMBER_DURATION;
-				}
-				break;
+			counter1--;
+			counter2--;
+			// Hết thời gian chuyển qua trạng thái tiếp theo
+			if (counter2 <= 0) {
+				traffic_state = RED_AMBER;
+				counter2 = AMBER_DURATION;
+			}
+			break;
 
-			// Road 1 Đỏ - Road 2 Vàng
-			case RED_AMBER:
-				setTrafficLight(0, 1, 0, 0);
-				setTrafficLight(1, 0, 1, 0);
+		// Road 1 Đỏ - Road 2 Vàng
+		case RED_AMBER:
+			setTrafficLight(0, 1, 0, 0);
+			setTrafficLight(1, 0, 1, 0);
 
-				counter1--;
-				counter2--;
-				if (counter2 <= 0) {
-					traffic_state = GREEN_RED;
-					counter1 = GREEN_DURATION;
-					counter2 = RED_DURATION;
-				}
-				break;
+			counter1--;
+			counter2--;
+			if (counter2 <= 0) {
+				traffic_state = GREEN_RED;
+				counter1 = GREEN_DURATION;
+				counter2 = RED_DURATION;
+			}
+			break;
 
-			// Road 1 Xanh - Road 2 Đỏ
-			case GREEN_RED:
-				setTrafficLight(0, 0, 0, 1);
-				setTrafficLight(1, 1, 0, 0);
+		// Road 1 Xanh - Road 2 Đỏ
+		case GREEN_RED:
+			setTrafficLight(0, 0, 0, 1);
+			setTrafficLight(1, 1, 0, 0);
 
-				counter1--;
-				counter2--;
-				if (counter1 <= 0) {
-					traffic_state = AMBER_RED;
-					counter1 = AMBER_DURATION;
-				}
-				break;
+			counter1--;
+			counter2--;
+			if (counter1 <= 0) {
+				traffic_state = AMBER_RED;
+				counter1 = AMBER_DURATION;
+			}
+			break;
 
-			// Road 1 Vàng - Road 2 Đỏ
-			case AMBER_RED:
-				setTrafficLight(0, 0, 1, 0);
-				setTrafficLight(1, 1, 0, 0);
+		// Road 1 Vàng - Road 2 Đỏ
+		case AMBER_RED:
+			setTrafficLight(0, 0, 1, 0);
+			setTrafficLight(1, 1, 0, 0);
 
-				counter1--;
-				counter2--;
-				if (counter1 <= 0) {
-					traffic_state = RED_GREEN;
-					counter1 = RED_DURATION;
-					counter2 = GREEN_DURATION;
-				}
-				break;
-		}
+			counter1--;
+			counter2--;
+			if (counter1 <= 0) {
+				traffic_state = RED_GREEN;
+				counter1 = RED_DURATION;
+				counter2 = GREEN_DURATION;
+			}
+			break;
+	//}
 	}
 }
 
 // FSM cho các chế độ sửa đổi
 void fsm_modify_mode(void) {
     // Nháy LEDs mỗi 2Hz
-    if (isTimerExpired(1)) {
-        setTimer(1, 250);
-        blink_state = !blink_state;
+    //if (isTimerExpired(1)) {
+        //setTimer(1, 250);
+	if (current_mode == MODE_NORMAL) {
+		//clearAllTrafficLights(); // Tắt đèn khi thoát khỏi chế độ modify
+		return;
+	}
+	blink_state = !blink_state;
 
-        if (blink_state) {
-            switch (current_mode) {
-                case MODE_MODIFY_RED:
-                    // Nháy tất cả đèn đỏ
-                    HAL_GPIO_WritePin(RED1_GPIO_Port, RED1_Pin, GPIO_PIN_SET);
-                    HAL_GPIO_WritePin(RED2_GPIO_Port, RED2_Pin, GPIO_PIN_SET);
-                    break;
-                case MODE_MODIFY_AMBER:
-                	// Nháy tất cả đèn vàng
-                    HAL_GPIO_WritePin(AMBER1_GPIO_Port, AMBER1_Pin, GPIO_PIN_SET);
-                    HAL_GPIO_WritePin(AMBER2_GPIO_Port, AMBER2_Pin, GPIO_PIN_SET);
-                    break;
-                case MODE_MODIFY_GREEN:
-                	// Nháy tất cả đèn xanh
-                    HAL_GPIO_WritePin(GREEN1_GPIO_Port, GREEN1_Pin, GPIO_PIN_SET);
-                    HAL_GPIO_WritePin(GREEN2_GPIO_Port, GREEN2_Pin, GPIO_PIN_SET);
-                    break;
-            }
-        } else {
-            clearAllTrafficLights();
-        }
-    }
+	if (blink_state) {
+		switch (current_mode) {
+			case MODE_MODIFY_RED:
+				// Nháy tất cả đèn đỏ
+				HAL_GPIO_WritePin(RED1_GPIO_Port, RED1_Pin, GPIO_PIN_SET);
+				HAL_GPIO_WritePin(RED2_GPIO_Port, RED2_Pin, GPIO_PIN_SET);
+				break;
+			case MODE_MODIFY_AMBER:
+				// Nháy tất cả đèn vàng
+				HAL_GPIO_WritePin(AMBER1_GPIO_Port, AMBER1_Pin, GPIO_PIN_SET);
+				HAL_GPIO_WritePin(AMBER2_GPIO_Port, AMBER2_Pin, GPIO_PIN_SET);
+				break;
+			case MODE_MODIFY_GREEN:
+				// Nháy tất cả đèn xanh
+				HAL_GPIO_WritePin(GREEN1_GPIO_Port, GREEN1_Pin, GPIO_PIN_SET);
+				HAL_GPIO_WritePin(GREEN2_GPIO_Port, GREEN2_Pin, GPIO_PIN_SET);
+				break;
+		}
+	} else {
+		clearAllTrafficLights();
+	}
+}
 
+void fsm_modify_mode_update_display(void){
+	// Chỉ chạy nếu ở một trong các chế độ modify
+	if (current_mode == MODE_NORMAL) return;
     // Cập nhật bộ đệm hiển thị
     led_buffer[0] = temp_value / 10;
     led_buffer[1] = temp_value % 10;

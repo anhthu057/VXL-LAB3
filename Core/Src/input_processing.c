@@ -10,6 +10,7 @@
 #include "software_timer.h"
 #include "input_reading.h"
 #include "led_display.h"
+#include "scheduler.h"
 
 enum ButtonState {
     BUTTON_RELEASED,
@@ -77,7 +78,7 @@ void fsm_for_input_processing(void) {
                         traffic_state = RED_GREEN;
                         counter1 = RED_DURATION;
                         counter2 = GREEN_DURATION;
-                        setTimer(0, 1000);
+                        //setTimer(0, 1000);
                         break;
                 }
             }
@@ -131,11 +132,11 @@ void fsm_for_input_processing(void) {
                     button2State = BUTTON_RELEASED;
                 } else {
                     // Nếu nhấn giữ tăng giá trị mỗi 500ms
-                	if (isTimerExpired(2)) {
+                	/*if (isTimerExpired(2)) {
 						temp_value++;
 						if (temp_value > 99) temp_value = 1;
 						setTimer(2, 500);
-					}
+					}*/
                 }
                 break;
         }
@@ -169,7 +170,7 @@ void fsm_for_input_processing(void) {
                     traffic_state = RED_GREEN;
                     counter1 = RED_DURATION;
                     counter2 = GREEN_DURATION;
-                    setTimer(0, 1000);
+                    //setTimer(0, 1000);
                 }
                 break;
 
@@ -190,4 +191,13 @@ void fsm_for_input_processing(void) {
                 break;
         }
     }
+}
+
+void task_button2_auto_increment(void) {
+    // Chỉ chạy nếu ở chế độ modify và nút 2 đang được nhấn giữ
+    if (current_mode != MODE_NORMAL && button2State == BUTTON_PRESSED_MORE_THAN_1_SECOND) {
+		temp_value++;
+		if (temp_value > 99) temp_value = 1;
+		// setTimer(2, 500); // Không còn cần thiết, scheduler sẽ tự chạy lại
+	}
 }

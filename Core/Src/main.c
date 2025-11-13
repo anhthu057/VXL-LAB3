@@ -25,6 +25,7 @@
 #include "input_reading.h"
 #include "time.h"
 #include "software_timer.h"
+#include "scheduler.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -68,6 +69,7 @@ static void MX_TIM2_Init(void);
   * @brief  The application entry point.
   * @retval int
   */
+
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -96,21 +98,28 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim2);
   /* USER CODE END 2 */
-
+  SCH_Init();
+  SCH_Add_Task(fsm_for_input_processing, 0, 1);
+  SCH_Add_Task(fsm_modify_mode_update_display, 0, 1);
+  SCH_Add_Task(display7SEG, 0, 1);
+  SCH_Add_Task(fsm_normal_mode, 0, 100);
+  SCH_Add_Task(fsm_modify_mode, 0, 25);
+  SCH_Add_Task(task_button2_auto_increment, 0, 50);
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  setTimer(0, 1000);
-  setTimer(1, 1000);
-  setTimer(2, 1000);
+//  setTimer(0, 1000);
+//  setTimer(1, 1000);
+//  setTimer(2, 1000);
   while (1)
   {
-	  fsm_for_input_processing();
-	  if (current_mode == MODE_NORMAL){
-		  fsm_normal_mode();
-	  }else{
-		  fsm_modify_mode();
-	  }
-	  display7SEG();
+//	  fsm_for_input_processing();
+//	  if (current_mode == MODE_NORMAL){
+//		  fsm_normal_mode();
+//	  }else{
+//		  fsm_modify_mode();
+//	  }
+//	  display7SEG();
+	  SCH_Dispatch_Tasks();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
